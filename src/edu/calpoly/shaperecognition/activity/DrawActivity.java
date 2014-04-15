@@ -1,15 +1,19 @@
-package com.example.shaperecognition;
+package edu.calpoly.shaperecognition.activity;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.Menu;
 
-public class MainActivity extends Activity {
+import com.example.shaperecognition.R;
+
+import edu.calpoly.shaperecongition.drawingcanvas.DrawingPanel;
+
+public class DrawActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(new DrawingPanel(this));
 		//test
 	}
 
