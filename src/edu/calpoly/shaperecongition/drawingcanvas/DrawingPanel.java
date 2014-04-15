@@ -43,6 +43,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
                 path.lineTo(event.getX(), event.getY());
             }else if(event.getAction() == MotionEvent.ACTION_MOVE){
                 path.lineTo(event.getX(), event.getY());
+                _graphics.add(path);
             }else if(event.getAction() == MotionEvent.ACTION_UP){
                 path.lineTo(event.getX(), event.getY());
                 _graphics.add(path);
