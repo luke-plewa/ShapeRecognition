@@ -13,6 +13,7 @@ import android.view.SurfaceView;
 public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 {
     private ArrayList<Path> _graphics = new ArrayList<Path>();
+    private Path curPath;
     private Paint mPaint;
 
     private DrawingThread _thread;
@@ -43,7 +44,6 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
                 path.lineTo(event.getX(), event.getY());
             }else if(event.getAction() == MotionEvent.ACTION_MOVE){
                 path.lineTo(event.getX(), event.getY());
-                _graphics.add(path);
             }else if(event.getAction() == MotionEvent.ACTION_UP){
                 path.lineTo(event.getX(), event.getY());
                 _graphics.add(path);
@@ -59,6 +59,10 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
             //canvas.drawPoint(graphic.x, graphic.y, mPaint);
             canvas.drawPath(path, mPaint);
         }
+        if (path != null) {
+        	canvas.drawPath(path, mPaint);
+        }
+        
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
