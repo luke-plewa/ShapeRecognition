@@ -27,11 +27,11 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         
         mPaint = new Paint();
         mPaint.setDither(true);
-        mPaint.setColor(0xFFFFFF00);
+        mPaint.setColor(0xffa020f0);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(3);
+        mPaint.setStrokeWidth(5);
     }
 
 
