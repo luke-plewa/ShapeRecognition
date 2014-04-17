@@ -6,18 +6,23 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import edu.calpoly.shaperecognition.shaperecognition.Vector;
 
 public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 {
     private ArrayList<Path> _graphics = new ArrayList<Path>();
+    private ArrayList<Vector> _vectors = new ArrayList<Vector>();
     private Path curPath;
     private Paint mPaint;
+    private Paint pointPaint;
 
     private DrawingThread _thread;
     private Path path;
+    private Vector vector;
 
     public DrawingPanel(Context context) 
     {
@@ -32,6 +37,14 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(3);
+        
+        pointPaint = new Paint();
+        pointPaint.setDither(true);
+        pointPaint.setColor(0xffa020f0);
+        pointPaint.setStyle(Paint.Style.STROKE);
+        pointPaint.setStrokeJoin(Paint.Join.ROUND);
+        pointPaint.setStrokeCap(Paint.Cap.ROUND);
+        pointPaint.setStrokeWidth(3);
     }
 
 
@@ -40,13 +53,18 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         synchronized (_thread.getSurfaceHolder()) {
             if(event.getAction() == MotionEvent.ACTION_DOWN){
                 path = new Path();
+                vector = new Vector();
                 path.moveTo(event.getX(), event.getY());
                 path.lineTo(event.getX(), event.getY());
+                vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
             }else if(event.getAction() == MotionEvent.ACTION_MOVE){
                 path.lineTo(event.getX(), event.getY());
+                vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
             }else if(event.getAction() == MotionEvent.ACTION_UP){
                 path.lineTo(event.getX(), event.getY());
                 _graphics.add(path);
+                _vectors.add(vector);
+                vector.processVector();
             }
 
             return true;
@@ -55,12 +73,28 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void onDraw(Canvas canvas) {
-        for (Path path : _graphics) {
+        /*for (Path path : _graphics) {
             //canvas.drawPoint(graphic.x, graphic.y, mPaint);
             canvas.drawPath(path, mPaint);
         }
         if (path != null) {
         	canvas.drawPath(path, mPaint);
+        }
+        */
+        
+        if (!_vectors.isEmpty()) {
+        	Vector last = _vectors.get(_vectors.size()-1);
+        	
+        	ArrayList<Point> last_points = last.getPoints();
+        	for (int i = 0; i < last_points.size(); i++) {
+        		if (i+1 < last_points.size()) {
+        		canvas.drawLine(last_points.get(i).x, 
+        						last_points.get(i).y, 
+        						last_points.get(i+1).x,
+        						last_points.get(i+1).y,
+        						pointPaint);
+        		}
+        	}
         }
         
     }
