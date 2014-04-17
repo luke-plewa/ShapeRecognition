@@ -64,7 +64,7 @@ public class Vector {
 			Double angle;
 			
 			if((a_scalar*b_scalar) > SCALAR_TOLERANCE){
-				angle = Math.acos(((v1_x*v2_x)+(v1_y*v2_y)/(a_scalar*b_scalar)));
+				angle = Math.acos(((v1_x*v2_x)+(v1_y*v2_y)) / (a_scalar*b_scalar));
 			}else{
 				angle = Math.PI;
 			}
