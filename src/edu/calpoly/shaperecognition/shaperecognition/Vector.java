@@ -9,7 +9,7 @@ public class Vector {
 	
 	private static final String TAG = "VECTOR";
 	private static final double MIN_DISTANCE = 3.0; // TODO
-	private static final int SCALAR_TOLERANCE = 100; // TODO
+	private static final int SCALAR_TOLERANCE = 10; // TODO
 	
 	private ArrayList<Point> points;
 	
@@ -63,13 +63,17 @@ public class Vector {
 		
 			Double angle;
 			
-			if((a_scalar*b_scalar) > SCALAR_TOLERANCE){
-				angle = Math.acos(((v1_x*v2_x)+(v1_y*v2_y)) / (a_scalar*b_scalar));
-			}else{
+			//angle between two parallel vectors:
+			//if facing the same direction -> 0 degrees !
+			//if facing opposite directions -> 180 degrees
+			angle = Math.acos(((v1_x*v2_x)+(v1_y*v2_y)) / (a_scalar*b_scalar));
+			
+			Double toleranceOP = Math.abs(angle - 180);
+			
+			if(angle < SCALAR_TOLERANCE || toleranceOP < SCALAR_TOLERANCE){
 				angle = Math.PI;
 			}
-			
-			Log.d(TAG, "scalar: " + a_scalar + " " + b_scalar);
+
 			Log.d(TAG, "angle: " + angle);
 			
 			Double degrees = angle * (180/Math.PI);
