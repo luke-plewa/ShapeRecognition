@@ -9,7 +9,9 @@ public class Vector {
 	
 	private static final String TAG = "VECTOR";
 	private static final double MIN_DISTANCE = 3.0; // TODO
-	private static final int SCALAR_TOLERANCE = 10; // TODO
+	private static final double SCALAR_TOLERANCE = 10.0; // TODO
+	private static final double STRAIGHT_LINE = 180.0;
+	private static final double RIGHT_ANGLE = 90.0;
 	
 	private ArrayList<Point> points;
 	
@@ -43,41 +45,36 @@ public class Vector {
 			Point b = points.get(i+1);
 			Point c = points.get(i+2);
 
-		/*	Double ab = distanceBetween(a, b);
-			Double ac = distanceBetween(a, c);
-			Double bc = distanceBetween(b, c);
-			
-			Double ab2 = Math.pow(ab, 2); //ab squared
-			Double ac2 = Math.pow(ac, 2); //ac squared
-			Double bc2 = Math.pow(bc, 2); //bc squared
-						
-			Double angle = Math.acos((ab2 + bc2 - ac2)/(2 * ab2 * bc2));*/
-			
-			int v1_x = b.x - a.x;
-			int v1_y = b.y - a.y;
+			//Vector v1
+			int v1_x = (a.x - b.x);
+			int v1_y = (a.y - b.y);
+			//Vector v2
 			int v2_x = c.x - b.x;
 			int v2_y = c.y - b.y;
 			
 			Double a_scalar = Math.sqrt(Math.pow(v1_x,2) + Math.pow(v1_y,2));
 			Double b_scalar = Math.sqrt(Math.pow(v2_x,2) + Math.pow(v2_y,2));
 		
-			Double angle;
-			
-			//angle between two parallel vectors:
-			//if facing the same direction -> 0 degrees !
-			//if facing opposite directions -> 180 degrees
-			angle = Math.acos(((v1_x*v2_x)+(v1_y*v2_y)) / (a_scalar*b_scalar));
-			
-			Double toleranceOP = Math.abs(angle - 180);
-			
-			if(angle < SCALAR_TOLERANCE || toleranceOP < SCALAR_TOLERANCE){
-				angle = Math.PI;
-			}
+			//angle is in radians!!
+			Double angle = Math.acos(((v1_x*v2_x)+(v1_y*v2_y)) / (a_scalar*b_scalar));
+			Double degrees = angle * (180/Math.PI);
 
 			Log.d(TAG, "angle: " + angle);
-			
-			Double degrees = angle * (180/Math.PI);
+
+			//angle between two parallel vectors:
+			//if facing the same direction -> 0 degrees
+			//if facing opposite directions -> 180 degrees
+			if(Math.abs(degrees - STRAIGHT_LINE) < SCALAR_TOLERANCE){
+				degrees = STRAIGHT_LINE;
+				Log.d(TAG, "Straight Line Drawn");
+				
+			}else if(Math.abs(degrees - RIGHT_ANGLE) < SCALAR_TOLERANCE){
+				degrees = RIGHT_ANGLE;
+				Log.d(TAG, "Right Angle Drawn");
+			}
 			Log.d(TAG, "Degrees: " + degrees);
+
+			
 		}
 	}
 }
