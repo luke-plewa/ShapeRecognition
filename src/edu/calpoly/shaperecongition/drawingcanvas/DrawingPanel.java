@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -32,15 +33,15 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         
         mPaint = new Paint();
         mPaint.setDither(true);
-        mPaint.setColor(0xffa020f0);
+        mPaint.setColor(Color.WHITE);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(3);
+        mPaint.setStrokeWidth(5);
         
         pointPaint = new Paint();
         pointPaint.setDither(true);
-        pointPaint.setColor(0xffa020f0);
+        pointPaint.setColor(Color.BLUE);
         pointPaint.setStyle(Paint.Style.STROKE);
         pointPaint.setStrokeJoin(Paint.Join.ROUND);
         pointPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -73,16 +74,15 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void onDraw(Canvas canvas) {
-        /*for (Path path : _graphics) {
+        for (Path path : _graphics) {
             //canvas.drawPoint(graphic.x, graphic.y, mPaint);
             canvas.drawPath(path, mPaint);
         }
         if (path != null) {
         	canvas.drawPath(path, mPaint);
         }
-        */
         
-        if (!_vectors.isEmpty()) {
+        /*if (!_vectors.isEmpty()) {
         	Vector last = _vectors.get(_vectors.size()-1);
         	
         	ArrayList<Point> last_points = last.getPoints();
@@ -95,8 +95,17 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         						pointPaint);
         		}
         	}
+        }*/
+        if (vector != null) {
+	        ArrayList<Point> lines = vector.getShape();
+	        for (int i = 0; lines != null && i + 1 < lines.size(); i+= 2) {
+	        	canvas.drawLine(lines.get(i).x, 
+						lines.get(i).y, 
+						lines.get(i+1).x,
+						lines.get(i+1).y,
+						pointPaint);
+	        }
         }
-        
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width,

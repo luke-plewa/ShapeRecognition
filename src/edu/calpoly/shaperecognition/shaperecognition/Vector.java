@@ -14,13 +14,16 @@ public class Vector {
 	private static final double RIGHT_ANGLE = 90.0;
 	
 	private ArrayList<Point> points;
+	private ArrayList<Point> lines;
 	
 	public Vector() {
 		points = new ArrayList<Point>();
+		lines = new ArrayList<Point>();
 	}
 	
 	public Vector(ArrayList<Point> points) {
 		this.points = points;
+		lines = new ArrayList<Point>();
 	}
 	
 	public void addPoint(Point point) {
@@ -39,42 +42,62 @@ public class Vector {
 		return points;
 	}
 	
+	public double getDegrees(Point a, Point b, Point c) {
+		//Vector v1
+		int v1_x = (a.x - b.x);
+		int v1_y = (a.y - b.y);
+		//Vector v2
+		int v2_x = c.x - b.x;
+		int v2_y = c.y - b.y;
+		
+		Double a_scalar = Math.sqrt(Math.pow(v1_x,2) + Math.pow(v1_y,2));
+		Double b_scalar = Math.sqrt(Math.pow(v2_x,2) + Math.pow(v2_y,2));
+	
+		//angle is in radians!!
+		Double angle = Math.acos(((v1_x*v2_x)+(v1_y*v2_y)) / (a_scalar*b_scalar));
+		return angle * (180/Math.PI);
+	}
+	
 	public void processVector() {
+		Point start_point = null, end_point = null;
+		
 		for (int i = 0; i < points.size() && i + 2 < points.size(); i++) {
 			Point a = points.get(i);
 			Point b = points.get(i+1);
 			Point c = points.get(i+2);
-
-			//Vector v1
-			int v1_x = (a.x - b.x);
-			int v1_y = (a.y - b.y);
-			//Vector v2
-			int v2_x = c.x - b.x;
-			int v2_y = c.y - b.y;
 			
-			Double a_scalar = Math.sqrt(Math.pow(v1_x,2) + Math.pow(v1_y,2));
-			Double b_scalar = Math.sqrt(Math.pow(v2_x,2) + Math.pow(v2_y,2));
-		
-			//angle is in radians!!
-			Double angle = Math.acos(((v1_x*v2_x)+(v1_y*v2_y)) / (a_scalar*b_scalar));
-			Double degrees = angle * (180/Math.PI);
+			double degrees = getDegrees(a, b, c);
 
-			Log.d(TAG, "angle: " + angle);
+			//Log.d(TAG, "angle: " + angle);
 
 			//angle between two parallel vectors:
 			//if facing the same direction -> 0 degrees
 			//if facing opposite directions -> 180 degrees
 			if(Math.abs(degrees - STRAIGHT_LINE) < SCALAR_TOLERANCE){
 				degrees = STRAIGHT_LINE;
-				Log.d(TAG, "Straight Line Drawn");
-				
+				//Log.d(TAG, "Straight Line Drawn");
+				if (start_point == null) {
+					start_point = a;
+				} else {
+					end_point = c;
+				}
 			}else if(Math.abs(degrees - RIGHT_ANGLE) < SCALAR_TOLERANCE){
 				degrees = RIGHT_ANGLE;
 				Log.d(TAG, "Right Angle Drawn");
+			} else {
+				lines.add(start_point);
+				lines.add(end_point);
+				start_point = null;
 			}
-			Log.d(TAG, "Degrees: " + degrees);
-
-			
+			Log.d(TAG, "Degrees: " + degrees);	
 		}
+		if (start_point != null && !lines.contains(start_point)) {
+			lines.add(start_point);
+			lines.add(end_point);
+		}
+	}
+	
+	public ArrayList<Point> getShape() {
+		return lines;
 	}
 }
