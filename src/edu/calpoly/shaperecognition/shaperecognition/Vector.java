@@ -9,7 +9,7 @@ public class Vector {
 	
 	private static final String TAG = "VECTOR";
 	private static final double MIN_DISTANCE = 3.0; // TODO
-	private static final double SCALAR_TOLERANCE = 10.0; // TODO
+	private static final double SCALAR_TOLERANCE = 20.0; // TODO
 	private static final double STRAIGHT_LINE = 180.0;
 	private static final double RIGHT_ANGLE = 90.0;
 	
@@ -42,6 +42,9 @@ public class Vector {
 		return points;
 	}
 	
+	//angle between two parallel vectors:
+	//if facing the same direction -> 0 degrees
+	//if facing opposite directions -> 180 degrees
 	public double getDegrees(Point a, Point b, Point c) {
 		//Vector v1
 		int v1_x = (a.x - b.x);
@@ -61,43 +64,35 @@ public class Vector {
 	public void processVector() {
 		Point start_point = null, end_point = null;
 		
-		for (int i = 0; i < points.size() && i + 2 < points.size(); i++) {
+		for (int i = 0; i + 2 < points.size(); i++) {
 			Point a = points.get(i);
 			Point b = points.get(i+1);
 			Point c = points.get(i+2);
 			
 			double degrees = getDegrees(a, b, c);
 
-			//Log.d(TAG, "angle: " + angle);
-
-			//angle between two parallel vectors:
-			//if facing the same direction -> 0 degrees
-			//if facing opposite directions -> 180 degrees
 			if(Math.abs(degrees - STRAIGHT_LINE) < SCALAR_TOLERANCE){
 				degrees = STRAIGHT_LINE;
-				//Log.d(TAG, "Straight Line Drawn");
 				if (start_point == null) {
 					start_point = a;
 				} else {
 					end_point = c;
 				}
-			}else if(Math.abs(degrees - RIGHT_ANGLE) < SCALAR_TOLERANCE){
-				degrees = RIGHT_ANGLE;
-				Log.d(TAG, "Right Angle Drawn");
-			} else {
+			}else if(start_point != null && end_point != null){
 				lines.add(start_point);
 				lines.add(end_point);
 				start_point = null;
+				end_point = null;
 			}
+			
 			Log.d(TAG, "Degrees: " + degrees);	
-		}
-		if (start_point != null && !lines.contains(start_point)) {
-			lines.add(start_point);
-			lines.add(end_point);
 		}
 	}
 	
 	public ArrayList<Point> getShape() {
+		if (lines.isEmpty()) {
+			processVector();
+		}
 		return lines;
 	}
 }

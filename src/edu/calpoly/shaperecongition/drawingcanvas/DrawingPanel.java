@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -45,7 +46,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         pointPaint.setStyle(Paint.Style.STROKE);
         pointPaint.setStrokeJoin(Paint.Join.ROUND);
         pointPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(5);
+        pointPaint.setStrokeWidth(5);
     }
 
 
@@ -55,6 +56,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
             if(event.getAction() == MotionEvent.ACTION_DOWN){
                 path = new Path();
                 vector = new Vector();
+                Log.d("Called", "Called!");
                 path.moveTo(event.getX(), event.getY());
                 path.lineTo(event.getX(), event.getY());
                 vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
@@ -65,7 +67,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
                 path.lineTo(event.getX(), event.getY());
                 _graphics.add(path);
                 _vectors.add(vector);
-                vector.processVector();
+                vector = null;
             }
 
             return true;
@@ -74,38 +76,51 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void onDraw(Canvas canvas) {
+    	
         for (Path path : _graphics) {
             //canvas.drawPoint(graphic.x, graphic.y, mPaint);
             canvas.drawPath(path, mPaint);
         }
-        if (path != null) {
-        	canvas.drawPath(path, mPaint);
-        }
+//        if (path != null) {
+//        	canvas.drawPath(path, mPaint);
+//        }
         
-        /*if (!_vectors.isEmpty()) {
-        	Vector last = _vectors.get(_vectors.size()-1);
-        	
-        	ArrayList<Point> last_points = last.getPoints();
-        	for (int i = 0; i < last_points.size(); i++) {
-        		if (i+1 < last_points.size()) {
-        		canvas.drawLine(last_points.get(i).x, 
-        						last_points.get(i).y, 
-        						last_points.get(i+1).x,
-        						last_points.get(i+1).y,
-        						pointPaint);
-        		}
-        	}
-        }*/
-        if (vector != null) {
-	        ArrayList<Point> lines = vector.getShape();
-	        for (int i = 0; lines != null && i + 1 < lines.size(); i+= 2) {
-	        	canvas.drawLine(lines.get(i).x, 
-						lines.get(i).y, 
-						lines.get(i+1).x,
-						lines.get(i+1).y,
-						pointPaint);
+//        if (!_vectors.isEmpty()) {
+//        	Vector last = _vectors.get(_vectors.size()-1);
+//        	
+//        	ArrayList<Point> last_points = last.getPoints();
+//        	for (int i = 0; i < last_points.size(); i++) {
+//        		if (i+1 < last_points.size()) {
+//        		canvas.drawLine(last_points.get(i).x, 
+//        						last_points.get(i).y, 
+//        						last_points.get(i+1).x,
+//        						last_points.get(i+1).y,
+//        						pointPaint);
+//        		}
+//        	}
+//        }
+//        
+        Log.d("Called", "Size: " + _vectors.size());
+        
+        //Delete after debugging
+        for (Vector v : _vectors) {
+        	ArrayList<Point> lines = v.getShape();
+
+		        for (int i = 0; i + 1 < lines.size(); i += 2) {
+		        	Log.d("Lines", "Index: " + i);
+			        	canvas.drawLine(lines.get(i).x,
+								lines.get(i).y, 
+								lines.get(i+1).x,
+								lines.get(i+1).y,
+								pointPaint);
+		        }
+		        
+//		        Log.d("Lines", "Lines size of vector: "+ lines.size()); 
+//		    	Log.d("Lines", "Vector null? : " + (vector == null));
+//		    	Log.d("Lines", "Lines null? : " + (lines == null));
+//		       if (lines.get(i) == null) 
+//		        	Log.d("Lines", "Lines.get(" + i + ") null? : " + (lines.get(i) == null));
 	        }
-        }
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
