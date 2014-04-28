@@ -8,7 +8,7 @@ import android.util.Log;
 public class Vector {
 	
 	private static final String TAG = "VECTOR";
-	private static final double MIN_DISTANCE = 3.0; // TODO
+	private static final double MIN_DISTANCE = 5.0; // TODO
 	private static final double SCALAR_TOLERANCE = 20.0; // TODO
 	private static final double STRAIGHT_LINE = 180.0;
 	private static final double RIGHT_ANGLE = 90.0;
@@ -87,11 +87,19 @@ public class Vector {
 			
 			Log.d(TAG, "Degrees: " + degrees);	
 		}
+		if(end_point != null && !lines.contains(end_point)){
+			lines.add(start_point);
+			lines.add(end_point);
+			start_point = null;
+			end_point = null;
+		}
+		
 	}
 	
 	public ArrayList<Point> getShape() {
 		if (lines.isEmpty()) {
 			processVector();
+			ShapeRecognizer.recognizeShape(this);
 		}
 		return lines;
 	}

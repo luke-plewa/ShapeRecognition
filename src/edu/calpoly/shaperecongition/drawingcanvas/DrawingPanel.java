@@ -65,6 +65,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
                 vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
             }else if(event.getAction() == MotionEvent.ACTION_UP){
                 path.lineTo(event.getX(), event.getY());
+                vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
                 _graphics.add(path);
                 _vectors.add(vector);
                 vector = null;
@@ -81,46 +82,21 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
             //canvas.drawPoint(graphic.x, graphic.y, mPaint);
             canvas.drawPath(path, mPaint);
         }
-//        if (path != null) {
-//        	canvas.drawPath(path, mPaint);
-//        }
-        
-//        if (!_vectors.isEmpty()) {
-//        	Vector last = _vectors.get(_vectors.size()-1);
-//        	
-//        	ArrayList<Point> last_points = last.getPoints();
-//        	for (int i = 0; i < last_points.size(); i++) {
-//        		if (i+1 < last_points.size()) {
-//        		canvas.drawLine(last_points.get(i).x, 
-//        						last_points.get(i).y, 
-//        						last_points.get(i+1).x,
-//        						last_points.get(i+1).y,
-//        						pointPaint);
-//        		}
-//        	}
-//        }
-//        
-        Log.d("Called", "Size: " + _vectors.size());
+
+        //Log.d("Called", "Size: " + _vectors.size());
         
         //Delete after debugging
         for (Vector v : _vectors) {
         	ArrayList<Point> lines = v.getShape();
-
+        	Log.d("Lines", "Size: " + lines.size());
 		        for (int i = 0; i + 1 < lines.size(); i += 2) {
-		        	Log.d("Lines", "Index: " + i);
 			        	canvas.drawLine(lines.get(i).x,
 								lines.get(i).y, 
 								lines.get(i+1).x,
 								lines.get(i+1).y,
 								pointPaint);
 		        }
-		        
-//		        Log.d("Lines", "Lines size of vector: "+ lines.size()); 
-//		    	Log.d("Lines", "Vector null? : " + (vector == null));
-//		    	Log.d("Lines", "Lines null? : " + (lines == null));
-//		       if (lines.get(i) == null) 
-//		        	Log.d("Lines", "Lines.get(" + i + ") null? : " + (lines.get(i) == null));
-	        }
+        }
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
