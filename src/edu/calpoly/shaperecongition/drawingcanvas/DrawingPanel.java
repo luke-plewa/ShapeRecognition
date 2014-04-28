@@ -69,19 +69,24 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
                 _graphics.add(path);
                 _vectors.add(vector);
                 vector = null;
+                path = null;
             }
 
             return true;
         }
     }
 
+    
     @Override
     public void onDraw(Canvas canvas) {
     	
-        for (Path path : _graphics) {
+    	if (path != null) {
+    		canvas.drawPath(path, mPaint);
+    	}
+        /*for (Path path : _graphics) {
             //canvas.drawPoint(graphic.x, graphic.y, mPaint);
             canvas.drawPath(path, mPaint);
-        }
+        }*/
 
         //Log.d("Called", "Size: " + _vectors.size());
         
