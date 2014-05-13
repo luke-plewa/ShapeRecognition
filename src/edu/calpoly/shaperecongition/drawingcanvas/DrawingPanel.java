@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import edu.calpoly.shaperecognition.shaperecognition.Segment;
 import edu.calpoly.shaperecognition.shaperecognition.Vector;
 
 public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
@@ -42,7 +43,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         
         pointPaint = new Paint();
         pointPaint.setDither(true);
-        pointPaint.setColor(Color.BLUE);
+        pointPaint.setColor(Color.RED);
         pointPaint.setStyle(Paint.Style.STROKE);
         pointPaint.setStrokeJoin(Paint.Join.ROUND);
         pointPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -92,15 +93,15 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         
         //Delete after debugging
         for (Vector v : _vectors) {
-        	ArrayList<Point> lines = v.getShape();
-        	Log.d("Lines", "Size: " + lines.size());
-		        for (int i = 0; i + 1 < lines.size(); i += 2) {
-			        	canvas.drawLine(lines.get(i).x,
-								lines.get(i).y, 
-								lines.get(i+1).x,
-								lines.get(i+1).y,
-								pointPaint);
-		        }
+        	ArrayList<Segment> lines = v.getShape();
+	        for (int i = 0; i < lines.size(); i++) {
+	        	Segment curr = lines.get(i);
+	        	canvas.drawLine(curr.start.x,
+	        			curr.start.y,
+	        			curr.end.x,
+	        			curr.end.y,
+	        			pointPaint);
+	        }
         }
     }
 

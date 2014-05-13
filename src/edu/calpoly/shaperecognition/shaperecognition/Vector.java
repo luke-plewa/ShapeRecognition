@@ -14,16 +14,16 @@ public class Vector {
 	private static final double RIGHT_ANGLE = 90.0;
 	
 	private ArrayList<Point> points;
-	private ArrayList<Point> lines;
+	private ArrayList<Segment> segments;
 	
 	public Vector() {
 		points = new ArrayList<Point>();
-		lines = new ArrayList<Point>();
+		segments = new ArrayList<Segment>();
 	}
 	
 	public Vector(ArrayList<Point> points) {
 		this.points = points;
-		lines = new ArrayList<Point>();
+		segments = new ArrayList<Segment>();
 	}
 	
 	public void addPoint(Point point) {
@@ -79,28 +79,28 @@ public class Vector {
 					end_point = c;
 				}
 			}else if(start_point != null && end_point != null){
-				lines.add(start_point);
-				lines.add(end_point);
+				segments.add(new Segment(start_point, end_point));
 				start_point = null;
 				end_point = null;
 			}
 			
 			Log.d(TAG, "Degrees: " + degrees);	
 		}
-		if(end_point != null && !lines.contains(end_point)){
-			lines.add(start_point);
-			lines.add(end_point);
+		if(end_point != null && !segments.contains(end_point)){
+			segments.add(new Segment(start_point, end_point));
 			start_point = null;
 			end_point = null;
 		}
 		
 	}
 	
-	public ArrayList<Point> getShape() {
-		if (lines.isEmpty()) {
+	public ArrayList<Segment> getShape() {
+		if (segments.isEmpty()) {
 			processVector();
-			ShapeRecognizer.recognizeShape(this);
+			if (!segments.isEmpty()){
+				ShapeRecognizer.recognizeShape(this);
+			}
 		}
-		return lines;
+		return segments;
 	}
 }
