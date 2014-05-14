@@ -3,6 +3,7 @@ package edu.calpoly.shaperecognition.shaperecognition;
 import java.util.ArrayList;
 
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.Log;
 
 public class Vector {
@@ -102,5 +103,16 @@ public class Vector {
 			}
 		}
 		return segments;
+	}
+	
+	public Rect getRect() {
+		if (segments.isEmpty()) {
+			processVector();
+			if (!segments.isEmpty()){
+				Log.d("Shape", "RECOGNIZIZIZIZNG");	
+				return ShapeRecognizer.recognizeShape(this);
+			}
+		}
+		return null;
 	}
 }

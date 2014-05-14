@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -22,6 +23,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
     private Path curPath;
     private Paint mPaint;
     private Paint pointPaint;
+    private Paint rectPaint;
 
     private DrawingThread _thread;
     private Path path;
@@ -48,6 +50,14 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         pointPaint.setStrokeJoin(Paint.Join.ROUND);
         pointPaint.setStrokeCap(Paint.Cap.ROUND);
         pointPaint.setStrokeWidth(5);
+        
+        rectPaint = new Paint();
+        rectPaint.setDither(true);
+        rectPaint.setColor(Color.GREEN);
+        rectPaint.setStyle(Paint.Style.STROKE);
+        rectPaint.setStrokeJoin(Paint.Join.ROUND);
+        rectPaint.setStrokeCap(Paint.Cap.ROUND);
+        rectPaint.setStrokeWidth(5);
     }
 
 
@@ -93,7 +103,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         
         //Delete after debugging
         for (Vector v : _vectors) {
-        	ArrayList<Segment> lines = v.getShape();
+        	/*ArrayList<Segment> lines = v.getShape();
 	        for (int i = 0; i < lines.size(); i++) {
 	        	Segment curr = lines.get(i);
 	        	canvas.drawLine(curr.start.x,
@@ -101,6 +111,10 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
 	        			curr.end.x,
 	        			curr.end.y,
 	        			pointPaint);
+	        }*/
+	        Rect r = v.getRect();
+	        if (r != null) {
+	        	canvas.drawRect(r, rectPaint);
 	        }
         }
     }

@@ -3,25 +3,83 @@ package edu.calpoly.shaperecognition.shaperecognition;
 import java.util.ArrayList;
 
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.Log;
 
 public class ShapeRecognizer {
 	
 	private static final double LENGTH_TOLERANCE = 0.2;
+	private static final double DEG_TOLERANCE = 20;
+	private static final double RIGHT_ANGLE = 90;
 	
-	public static Vector recognizeShape(Vector shape){
-		
-		Vector ans = new Vector();
+	public static Rect recognizeShape(Vector shape){
 		
 		if(isSquare(shape)){
 			Log.d("Shape", "We have a square!");
+			return makeRectangle(shape);
 		}else if(isTriangle()){
 			
 		}else if(isCircle()){
 			
 		}
 		
-		return ans;
+		return null;
+	}
+	
+	public static Rect makeRectangle(Vector shape) {
+		ArrayList<Segment> segments = shape.getShape();
+		
+		while (canBeSquished(segments, 4)) {
+			segments = adjustSegments(segments);
+		}
+		
+		double length_1 = segments.get(0).getLength() + segments.get(2).getLength();
+		length_1 /= 2;
+		double length_2 = segments.get(1).getLength() + segments.get(3).getLength();
+		length_2 /= 2;
+		
+		Point center = new Point();
+		center.x += segments.get(0).start.x;
+		center.y += segments.get(0).start.y;
+		center.x += segments.get(2).start.x;
+		center.y += segments.get(2).start.y;
+		center.x /= 2;
+		center.y /= 2;
+
+		int left = (int) (center.x - length_2 / 2);
+		int top = (int) (center.y - length_1 / 2);
+		int bottom = (int) (center.y + length_1 / 2);
+		int right = (int) (center.x + length_2 / 2);
+
+		Rect r = new Rect(left, top, right, bottom);
+
+		Log.d("Shape", "points: " + left + top + right + bottom);	
+		
+		return r;
+	}
+	
+	private static double avgLength(ArrayList<Segment> segments) { 
+		double avg_length = 0;
+		
+		for (int i = 0; i < segments.size(); i++) {
+			avg_length += segments.get(i).getLength();
+		}
+		avg_length /= segments.size();
+		
+		return avg_length;
+	}
+	
+	private static boolean canBeSquished(ArrayList<Segment> segments, int size) {
+		boolean small_segment = false;
+		double avg_length = avgLength(segments);
+		
+		for (int i = 0; i < segments.size(); i++) {
+			if (segments.get(i).getLength() < LENGTH_TOLERANCE * avg_length) { 
+				small_segment = true;
+			}
+		}
+		
+		return segments.size() > size && small_segment;
 	}
 
 	private static boolean isSquare(Vector shape){
@@ -29,7 +87,7 @@ public class ShapeRecognizer {
 		ArrayList<Segment> segments = shape.getShape();
 		double angle1 = 0, angle2 = 0, angle3 = 0, angle4 = 0;
 	
-		if (segments.size() > 4) {
+		while (canBeSquished(segments, 4)) {
 			segments = adjustSegments(segments);
 		}
 		
@@ -40,8 +98,10 @@ public class ShapeRecognizer {
 			angle4 = segments.get(3).getAngle(segments.get(0));
 		}
 		
-		if((Math.abs(angle1 - 90) < 20) && (Math.abs(angle2 - 90) < 20) &&
-				(Math.abs(angle3 - 20) < 20) && (Math.abs(angle4 - 90) < 20)){
+		if((Math.abs(angle1 - RIGHT_ANGLE) < DEG_TOLERANCE)
+				&& (Math.abs(angle2 - RIGHT_ANGLE) < DEG_TOLERANCE) &&
+				(Math.abs(angle3 - RIGHT_ANGLE) < DEG_TOLERANCE)
+				&& (Math.abs(angle4 - RIGHT_ANGLE) < DEG_TOLERANCE)){
 			return true;
 		}
 		
@@ -49,12 +109,7 @@ public class ShapeRecognizer {
 	}
 	
 	private static ArrayList<Segment> adjustSegments(ArrayList<Segment> segments) {
-		double avg_length = 0;
-		for (int i = 0; i < segments.size(); i++) {
-			Log.d("Shape", Double.toString(segments.get(i).getLength()));
-			avg_length += segments.get(i).getLength();
-		}
-		avg_length /= segments.size();
+		double avg_length = avgLength(segments);
 
 		for (int i = 0; i < segments.size(); i++) {
 			Segment curr = segments.get(i);
@@ -77,6 +132,7 @@ public class ShapeRecognizer {
 				}
 				
 				Log.d("Shape", before + " " + after);
+				Log.d("Shape", "size " + segments.size());
 				
 				segments.get(before).end.x = midpoint.x;
 				segments.get(before).end.y = midpoint.y;
