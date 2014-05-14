@@ -33,11 +33,6 @@ public class ShapeRecognizer {
 			segments = adjustSegments(segments);
 		}
 		
-		double length_1 = segments.get(0).getLength() + segments.get(2).getLength();
-		length_1 /= 2;
-		double length_2 = segments.get(1).getLength() + segments.get(3).getLength();
-		length_2 /= 2;
-		
 		Point center = new Point();
 		center.x += segments.get(0).start.x;
 		center.y += segments.get(0).start.y;
@@ -45,11 +40,35 @@ public class ShapeRecognizer {
 		center.y += segments.get(2).start.y;
 		center.x /= 2;
 		center.y /= 2;
+		
+		Segment right_segment = new Segment();
+		Segment left_segment = new Segment();
+		Segment top_segment = new Segment();
+		Segment bottom_segment = new Segment();
+		
+		for (int i = 0; i < segments.size(); i++) {
+			Point start = segments.get(i).start;
+			Point end = segments.get(i).end;
+			if (start.x > center.x && end.x > center.x) {
+				right_segment = segments.get(i);
+			} else if (start.x < center.x && end.x < center.x) {
+				left_segment = segments.get(i);
+			} else if (start.y < center.y && end.y < center.y) {
+				top_segment = segments.get(i);
+			} else if (start.y > center.y && end.y > center.y) {
+				bottom_segment = segments.get(i);
+			}
+		}
+		
+		double length_1 = top_segment.getLength() + bottom_segment.getLength();
+		length_1 /= 2;
+		double length_2 = right_segment.getLength() + left_segment.getLength();
+		length_2 /= 2;
 
-		int left = (int) (center.x - length_2 / 2);
-		int top = (int) (center.y - length_1 / 2);
-		int bottom = (int) (center.y + length_1 / 2);
-		int right = (int) (center.x + length_2 / 2);
+		int left = (int) (center.x - length_1 / 2);
+		int top = (int) (center.y - length_2 / 2);
+		int bottom = (int) (center.y + length_2 / 2);
+		int right = (int) (center.x + length_1 / 2);
 
 		Rect r = new Rect(left, top, right, bottom);
 

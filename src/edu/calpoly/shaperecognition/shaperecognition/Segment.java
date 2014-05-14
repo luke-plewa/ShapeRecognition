@@ -6,6 +6,11 @@ public class Segment {
 
 	public Point start, end;
 	
+	public Segment() {
+		this.start = new Point();
+		this.end = new Point();
+	}
+	
 	public Segment(Point a, Point b) {
 		this.start = a;
 		this.end = b;
