@@ -13,7 +13,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import edu.calpoly.shaperecognition.shaperecognition.Rectangle;
 import edu.calpoly.shaperecognition.shaperecognition.Segment;
+import edu.calpoly.shaperecognition.shaperecognition.Shape;
+import edu.calpoly.shaperecognition.shaperecognition.Triangle;
 import edu.calpoly.shaperecognition.shaperecognition.Vector;
 
 public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
@@ -103,7 +106,23 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         
         //Delete after debugging
         for (Vector v : _vectors) {
-        	/*ArrayList<Segment> lines = v.getShape();
+        	Shape shape = v.getShape();
+        	if (shape instanceof Rectangle) {
+        		Rectangle r = (Rectangle) shape;
+        		canvas.drawRect(r.getRect(), rectPaint);
+        	} else if (shape instanceof Triangle) {
+        		Triangle tri = (Triangle) shape;
+        		ArrayList<Segment> lines = tri.getSegments();
+    	        for (int i = 0; i < lines.size(); i++) {
+    	        	Segment curr = lines.get(i);
+    	        	canvas.drawLine(curr.start.x,
+    	        			curr.start.y,
+    	        			curr.end.x,
+    	        			curr.end.y,
+    	        			rectPaint);
+    	        }
+        	}
+        	/*ArrayList<Segment> lines = shape.getSegments();
 	        for (int i = 0; i < lines.size(); i++) {
 	        	Segment curr = lines.get(i);
 	        	canvas.drawLine(curr.start.x,
@@ -112,10 +131,10 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
 	        			curr.end.y,
 	        			pointPaint);
 	        }*/
-	        Rect r = v.getRect();
+	        /*Rect r = v.getRect();
 	        if (r != null) {
 	        	canvas.drawRect(r, rectPaint);
-	        }
+	        }*/
         }
     }
 

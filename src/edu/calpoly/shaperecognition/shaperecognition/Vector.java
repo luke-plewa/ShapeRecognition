@@ -95,7 +95,17 @@ public class Vector {
 		
 	}
 	
-	public ArrayList<Segment> getShape() {
+	public Shape getShape() {
+		if (segments.isEmpty()) {
+			processVector();
+			if (!segments.isEmpty()){
+				return ShapeRecognizer.recognizeShape(this);
+			}
+		}
+		return null;
+	}
+	
+	public ArrayList<Segment> getSegments() {
 		if (segments.isEmpty()) {
 			processVector();
 			if (!segments.isEmpty()){
@@ -105,12 +115,12 @@ public class Vector {
 		return segments;
 	}
 	
-	public Rect getRect() {
+	public Rectangle getRect() {
 		if (segments.isEmpty()) {
 			processVector();
 			if (!segments.isEmpty()){
 				Log.d("Shape", "RECOGNIZIZIZIZNG");	
-				return ShapeRecognizer.recognizeShape(this);
+				return (Rectangle) ShapeRecognizer.recognizeShape(this);
 			}
 		}
 		return null;

@@ -11,14 +11,17 @@ public class ShapeRecognizer {
 	private static final double LENGTH_TOLERANCE = 0.2;
 	private static final double DEG_TOLERANCE = 20;
 	private static final double RIGHT_ANGLE = 90;
+	private static final double TRIANGLE_SUM = 180;
+	private static final double TRI_TOLERANCE = 20;
 	
-	public static Rect recognizeShape(Vector shape){
+	
+	public static Shape recognizeShape(Vector shape){
 		
 		if(isSquare(shape)){
 			Log.d("Shape", "We have a square!");
 			return makeRectangle(shape);
-		}else if(isTriangle()){
-			
+		}else if(isTriangle(shape)){
+			return makeTriangle(shape);
 		}else if(isCircle()){
 			
 		}
@@ -26,8 +29,36 @@ public class ShapeRecognizer {
 		return null;
 	}
 	
-	public static Rect makeRectangle(Vector shape) {
-		ArrayList<Segment> segments = shape.getShape();
+	public static Triangle makeTriangle(Vector shape) {
+		ArrayList<Segment> segments = shape.getSegments();
+		
+		while (canBeSquished(segments, 3)) {
+			segments = adjustSegments(segments);
+		}
+		
+		for (int i = 0; i < segments.size(); i++) {
+			int offset = i + 1;
+			if (i + 1 == segments.size()) {
+				offset = 0;
+			}
+			
+			Point cur = new Point(segments.get(i).end.x, segments.get(i).end.y);
+			Point next = new Point(segments.get(offset).start.x, segments.get(offset).start.y);
+			Point midpoint = new Point((cur.x + next.x) / 2, (cur.y + next.y) / 2);
+			
+			segments.get(i).end.x = midpoint.x;
+			segments.get(i).end.y = midpoint.y;
+			segments.get(offset).start.x = midpoint.x;
+			segments.get(offset).start.y = midpoint.y;
+		}
+		
+		Triangle tri = new Triangle(segments);
+		
+		return tri;
+	}
+	
+	public static Rectangle makeRectangle(Vector shape) {
+		ArrayList<Segment> segments = shape.getSegments();
 		
 		while (canBeSquished(segments, 4)) {
 			segments = adjustSegments(segments);
@@ -70,7 +101,7 @@ public class ShapeRecognizer {
 		int bottom = (int) (center.y + length_2 / 2);
 		int right = (int) (center.x + length_1 / 2);
 
-		Rect r = new Rect(left, top, right, bottom);
+		Rectangle r = new Rectangle(left, top, right, bottom);
 
 		Log.d("Shape", "points: " + left + top + right + bottom);	
 		
@@ -88,12 +119,24 @@ public class ShapeRecognizer {
 		return avg_length;
 	}
 	
-	private static boolean canBeSquished(ArrayList<Segment> segments, int size) {
-		boolean small_segment = false;
-		double avg_length = avgLength(segments);
+	private static double longest(ArrayList<Segment> segments) {
+		double longest = 0;
 		
 		for (int i = 0; i < segments.size(); i++) {
-			if (segments.get(i).getLength() < LENGTH_TOLERANCE * avg_length) { 
+			if (segments.get(i).getLength() > longest) { 
+				longest = segments.get(i).getLength();
+			}
+		}
+		
+		return longest;
+	}
+	
+	private static boolean canBeSquished(ArrayList<Segment> segments, int size) {
+		boolean small_segment = false;
+		double longest_length = longest(segments);
+		
+		for (int i = 0; i < segments.size(); i++) {
+			if (segments.get(i).getLength() < LENGTH_TOLERANCE * longest_length) { 
 				small_segment = true;
 			}
 		}
@@ -103,14 +146,14 @@ public class ShapeRecognizer {
 
 	private static boolean isSquare(Vector shape){
 		Log.d("Shape", "Maybe it's a square");
-		ArrayList<Segment> segments = shape.getShape();
+		ArrayList<Segment> segments = shape.getSegments();
 		double angle1 = 0, angle2 = 0, angle3 = 0, angle4 = 0;
 	
 		while (canBeSquished(segments, 4)) {
 			segments = adjustSegments(segments);
 		}
 		
-		if (segments.size() >= 4) {
+		if (segments.size() == 4) {
 			angle1 = segments.get(0).getAngle(segments.get(1));
 			angle2 = segments.get(1).getAngle(segments.get(2));
 			angle3 = segments.get(2).getAngle(segments.get(3));
@@ -195,7 +238,27 @@ public class ShapeRecognizer {
 	}
 	
 	
-	private static boolean isTriangle(){
+	private static boolean isTriangle(Vector shape){
+		Log.d("Shape", "Maybe it's a triangle");
+		ArrayList<Segment> segments = shape.getSegments();
+		double angle1 = 0, angle2 = 0, angle3 = 0;
+	
+		while (canBeSquished(segments, 3)) {
+			segments = adjustSegments(segments);
+		}
+		
+		if (segments.size() == 3) {
+			angle1 = TRIANGLE_SUM - segments.get(0).getAngle(segments.get(1));
+			angle2 = TRIANGLE_SUM - segments.get(1).getAngle(segments.get(2));
+			angle3 = TRIANGLE_SUM - segments.get(2).getAngle(segments.get(0));
+		}
+		
+		Log.d("Shape", "Tri: " + angle1 + " " + angle2 + " " + angle3);
+		
+		if(Math.abs(angle1 + angle2 + angle3 - TRIANGLE_SUM) < TRI_TOLERANCE){
+			Log.d("Shape", "It's a triangle");
+			return true;
+		}
 		
 		return false;
 	}
