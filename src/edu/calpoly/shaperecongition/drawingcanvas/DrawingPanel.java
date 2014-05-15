@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import edu.calpoly.shaperecognition.shaperecognition.Ellipse;
 import edu.calpoly.shaperecognition.shaperecognition.Rectangle;
 import edu.calpoly.shaperecognition.shaperecognition.Segment;
 import edu.calpoly.shaperecognition.shaperecognition.Shape;
@@ -121,20 +122,11 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
     	        			curr.end.y,
     	        			rectPaint);
     	        }
+        	} else if (shape instanceof Ellipse) {
+        		Ellipse ellipse = (Ellipse) shape;
+        		canvas.drawCircle((float) ellipse.getCX(), (float) ellipse.getCY(),
+        				(float) ellipse.getRadius(), rectPaint);
         	}
-        	/*ArrayList<Segment> lines = shape.getSegments();
-	        for (int i = 0; i < lines.size(); i++) {
-	        	Segment curr = lines.get(i);
-	        	canvas.drawLine(curr.start.x,
-	        			curr.start.y,
-	        			curr.end.x,
-	        			curr.end.y,
-	        			pointPaint);
-	        }*/
-	        /*Rect r = v.getRect();
-	        if (r != null) {
-	        	canvas.drawRect(r, rectPaint);
-	        }*/
         }
     }
 
