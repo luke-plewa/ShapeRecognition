@@ -13,7 +13,7 @@ public class ShapeRecognizer {
 	private static final double RIGHT_ANGLE = 90;
 	private static final double TRIANGLE_SUM = 180;
 	private static final double TRI_TOLERANCE = 20;
-	
+	private static final double ELLIPSE_TOLERANCE = 1.2;
 	
 	public static Shape recognizeShape(Vector shape){
 		
@@ -22,8 +22,8 @@ public class ShapeRecognizer {
 			return makeRectangle(shape);
 		}else if(isTriangle(shape)){
 			return makeTriangle(shape);
-		}else if(isCircle()){
-			
+		}else if(isCircle(shape)){
+			Log.d("Shape", "We have a circle!");
 		}
 		
 		return null;
@@ -107,7 +107,7 @@ public class ShapeRecognizer {
 		
 		return r;
 	}
-	
+
 	private static double avgLength(ArrayList<Segment> segments) { 
 		double avg_length = 0;
 		
@@ -263,8 +263,43 @@ public class ShapeRecognizer {
 		return false;
 	}
 	
-	private static boolean isCircle(){
+	private static boolean isCircle(Vector shape){
+		Log.d("Shape", "Maybe it's a circle");
+		ArrayList<Segment> segments = shape.getSegments();
+		ArrayList<Point> points = shape.getPoints();
+		boolean isCircle = true;
+		double max_x = 0, max_y = 0, min_x = 0, min_y = 0;
 		
-		return false;
+		for (int i = 0; i < points.size(); i++) {
+			Point p = points.get(i);
+			if (p.x < min_x) {
+				min_x = p.x;
+			}
+			if (p.x > max_x) {
+				max_x = p.x;
+			}
+			if (p.y < min_y) {
+				min_y = p.y;
+			}
+			if (p.y > max_y) {
+				max_y = p.y;
+			}
+		}
+		
+		double center_x = (max_x + min_x) / 2;
+		double center_y = (max_y + min_y) / 2;
+		double radius_x = Math.abs(max_x - min_x);
+		double radius_y = Math.abs(max_y - min_y);
+		
+		for (int i = 0; i < points.size(); i++) {
+			Point p = points.get(i);
+			double lhs = Math.pow((p.x - center_x), 2) / Math.pow(radius_x, 2);
+			lhs += Math.pow((p.y - center_y), 2) / Math.pow(radius_y, 2);
+			if (lhs > ELLIPSE_TOLERANCE) {
+				isCircle = false;
+			}
+		}
+		
+		return isCircle;
 	}
 }
