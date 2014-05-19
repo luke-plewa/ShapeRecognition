@@ -14,16 +14,17 @@ public class ShapeRecognizer {
 	private static final double TRIANGLE_SUM = 180;
 	private static final double TRI_TOLERANCE = 20;
 	private static final double ELLIPSE_TOLERANCE = 1.2;
+	private final static boolean DEBUG = false;
 	
 	public static Shape recognizeShape(Vector shape){
 		
 		if(isSquare(shape)){
-			Log.d("Shape", "We have a square!");
+			if (DEBUG) Log.d("Shape", "We have a square!");
 			return makeRectangle(shape);
 		}else if(isTriangle(shape)){
 			return makeTriangle(shape);
 		}else if(isCircle(shape)){
-			Log.d("Shape", "We have a circle!");
+			if (DEBUG) Log.d("Shape", "We have a circle!");
 			return makeEllipse(shape);
 		}
 		
@@ -31,7 +32,7 @@ public class ShapeRecognizer {
 	}
 	
 	public static Ellipse makeEllipse(Vector shape) {
-		Log.d("Shape", "Maybe it's a circle");
+		if (DEBUG) Log.d("Shape", "Maybe it's a circle");
 		ArrayList<Point> points = shape.getPoints();
 		double max_x = 0, max_y = 0, min_x = Double.MAX_VALUE, min_y = Double.MAX_VALUE;
 		
@@ -56,8 +57,8 @@ public class ShapeRecognizer {
 		double radius_x = Math.abs(max_x - min_x) / 2;
 		double radius_y = Math.abs(max_y - min_y) / 2;
 		
-		Log.d("Shape", max_x + " " + min_x + " " + max_y + " " + min_y);
-		Log.d("Shape", center_x + " " + center_y + " " + radius_x + " " + radius_y);
+		if (DEBUG) Log.d("Shape", max_x + " " + min_x + " " + max_y + " " + min_y);
+		if (DEBUG) Log.d("Shape", center_x + " " + center_y + " " + radius_x + " " + radius_y);
 		
 		return new Ellipse(center_x, center_y, radius_x, radius_y);
 	}
@@ -136,7 +137,7 @@ public class ShapeRecognizer {
 
 		Rectangle r = new Rectangle(left, top, right, bottom);
 
-		Log.d("Shape", "points: " + left + top + right + bottom);	
+		if (DEBUG) Log.d("Shape", "points: " + left + top + right + bottom);	
 		
 		return r;
 	}
@@ -178,7 +179,7 @@ public class ShapeRecognizer {
 	}
 
 	private static boolean isSquare(Vector shape){
-		Log.d("Shape", "Maybe it's a square");
+		if (DEBUG) Log.d("Shape", "Maybe it's a square");
 		ArrayList<Segment> segments = shape.getSegments();
 		double angle1 = 0, angle2 = 0, angle3 = 0, angle4 = 0;
 	
@@ -200,15 +201,16 @@ public class ShapeRecognizer {
 			return true;
 		}
 		
+		if (DEBUG) Log.d("Shape", "It's not a square");
 		return false;
 	}
 	
 	private static ArrayList<Segment> adjustSegments(ArrayList<Segment> segments) {
-		double avg_length = avgLength(segments);
+		double longest_length = longest(segments);
 
 		for (int i = 0; i < segments.size(); i++) {
 			Segment curr = segments.get(i);
-			if (curr.getLength() < LENGTH_TOLERANCE * avg_length) {
+			if (curr.getLength() < LENGTH_TOLERANCE * longest_length) {
 				Point midpoint = new Point();
 				midpoint.x = (curr.start.x + curr.end.x ) / 2;
 				midpoint.y = (curr.start.y + curr.end.y ) / 2;
@@ -218,23 +220,27 @@ public class ShapeRecognizer {
 				if (i == 0) {
 					before = segments.size() - 1;
 					after = 0;
-				} else if (i == segments.size() - 1) {
-					before = 0;
-					after = i;
+				} else if (i >= segments.size() - 1) {
+					before = segments.size() - 1;
+					after = 0;
 				} else {
 					before = i;
 					after = i + 1;
 				}
 				
-				Log.d("Shape", before + " " + after);
-				Log.d("Shape", "size " + segments.size());
+				if (DEBUG) Log.d("Shape", before + " " + after);
+				if (DEBUG) Log.d("Shape", "size " + segments.size());
 				
 				segments.get(before).end.x = midpoint.x;
 				segments.get(before).end.y = midpoint.y;
 				segments.get(after).start.x = midpoint.x;
 				segments.get(after).start.y = midpoint.y;
 			}
+			
+			if (DEBUG) Log.d("Shape", "Got here " + i);
 		}
+		
+		if (DEBUG) Log.d("Shape", "Got here 3");
 		return segments;
 	}
 	
@@ -259,7 +265,7 @@ public class ShapeRecognizer {
 	}
 	
 	private static boolean isDistanceEqual(Point a, Point b, Point c, Point d){
-		//Log.d("Shape", "isDistanceEqual");
+		//if (DEBUG) Log.d("Shape", "isDistanceEqual");
 		double seg1 = distanceBetween(a, b);
 		double seg2 = distanceBetween(c, d);
 		
@@ -272,13 +278,15 @@ public class ShapeRecognizer {
 	
 	
 	private static boolean isTriangle(Vector shape){
-		Log.d("Shape", "Maybe it's a triangle");
+		if (DEBUG) Log.d("Shape", "Maybe it's a triangle");
 		ArrayList<Segment> segments = shape.getSegments();
 		double angle1 = 0, angle2 = 0, angle3 = 0;
 	
+		if (DEBUG) Log.d("Shape", "Start squishing");
 		while (canBeSquished(segments, 3)) {
 			segments = adjustSegments(segments);
 		}
+		if (DEBUG) Log.d("Shape", "End squishing");
 		
 		if (segments.size() == 3) {
 			angle1 = TRIANGLE_SUM - segments.get(0).getAngle(segments.get(1));
@@ -286,18 +294,19 @@ public class ShapeRecognizer {
 			angle3 = TRIANGLE_SUM - segments.get(2).getAngle(segments.get(0));
 		}
 		
-		Log.d("Shape", "Tri: " + angle1 + " " + angle2 + " " + angle3);
+		if (DEBUG) Log.d("Shape", "Tri: " + angle1 + " " + angle2 + " " + angle3);
 		
 		if(Math.abs(angle1 + angle2 + angle3 - TRIANGLE_SUM) < TRI_TOLERANCE){
-			Log.d("Shape", "It's a triangle");
+			if (DEBUG) Log.d("Shape", "It's a triangle");
 			return true;
 		}
 		
+		if (DEBUG) Log.d("Shape", "It's not a triangle");
 		return false;
 	}
 	
 	private static boolean isCircle(Vector shape){
-		Log.d("Shape", "Maybe it's a circle");
+		if (DEBUG) Log.d("Shape", "Maybe it's a circle");
 		ArrayList<Segment> segments = shape.getSegments();
 		ArrayList<Point> points = shape.getPoints();
 		boolean isCircle = true;
@@ -333,6 +342,7 @@ public class ShapeRecognizer {
 			}
 		}
 		
+		if (DEBUG) Log.d("Shape", "Maybe it's a circle end");
 		return isCircle;
 	}
 }
