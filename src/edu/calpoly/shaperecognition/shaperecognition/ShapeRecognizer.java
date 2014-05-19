@@ -13,7 +13,8 @@ public class ShapeRecognizer {
 	private static final double RIGHT_ANGLE = 90;
 	private static final double TRIANGLE_SUM = 180;
 	private static final double TRI_TOLERANCE = 20;
-	private static final double ELLIPSE_TOLERANCE = 1.2;
+	private static final double ELLIPSE_TOLERANCE = 1.3;
+	private static final double ELLIPSE_LOWER_TOLERANCE = 0.7;
 	private final static boolean DEBUG = false;
 	
 	public static Shape recognizeShape(Vector shape){
@@ -282,7 +283,7 @@ public class ShapeRecognizer {
 		ArrayList<Segment> segments = shape.getSegments();
 		double angle1 = 0, angle2 = 0, angle3 = 0;
 	
-		if (DEBUG) Log.d("Shape", "Start squishing");
+		if (DEBUG) Log.d("Shape", "Start squishing " + segments.size());
 		while (canBeSquished(segments, 3)) {
 			segments = adjustSegments(segments);
 		}
@@ -337,7 +338,7 @@ public class ShapeRecognizer {
 			Point p = points.get(i);
 			double lhs = Math.pow((p.x - center_x), 2) / Math.pow(radius_x, 2);
 			lhs += Math.pow((p.y - center_y), 2) / Math.pow(radius_y, 2);
-			if (lhs > ELLIPSE_TOLERANCE) {
+			if (lhs > ELLIPSE_TOLERANCE || lhs < ELLIPSE_LOWER_TOLERANCE) {
 				isCircle = false;
 			}
 		}
