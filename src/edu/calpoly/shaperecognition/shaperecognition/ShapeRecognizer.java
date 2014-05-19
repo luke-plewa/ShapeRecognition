@@ -32,10 +32,8 @@ public class ShapeRecognizer {
 	
 	public static Ellipse makeEllipse(Vector shape) {
 		Log.d("Shape", "Maybe it's a circle");
-		ArrayList<Segment> segments = shape.getSegments();
 		ArrayList<Point> points = shape.getPoints();
-		boolean isCircle = true;
-		double max_x = 0, max_y = 0, min_x = 0, min_y = 0;
+		double max_x = 0, max_y = 0, min_x = Double.MAX_VALUE, min_y = Double.MAX_VALUE;
 		
 		for (int i = 0; i < points.size(); i++) {
 			Point p = points.get(i);
@@ -55,10 +53,13 @@ public class ShapeRecognizer {
 		
 		double center_x = (max_x + min_x) / 2;
 		double center_y = (max_y + min_y) / 2;
-		double radius_x = Math.abs(max_x - min_x);
-		double radius_y = Math.abs(max_y - min_y);
+		double radius_x = Math.abs(max_x - min_x) / 2;
+		double radius_y = Math.abs(max_y - min_y) / 2;
 		
-		return new Ellipse(center_x, center_y, radius_x);
+		Log.d("Shape", max_x + " " + min_x + " " + max_y + " " + min_y);
+		Log.d("Shape", center_x + " " + center_y + " " + radius_x + " " + radius_y);
+		
+		return new Ellipse(center_x, center_y, radius_x, radius_y);
 	}
 	
 	public static Triangle makeTriangle(Vector shape) {

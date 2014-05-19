@@ -124,8 +124,9 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
     	        }
         	} else if (shape instanceof Ellipse) {
         		Ellipse ellipse = (Ellipse) shape;
-        		canvas.drawCircle((float) ellipse.getCX(), (float) ellipse.getCY(),
-        				(float) ellipse.getRadius(), rectPaint);
+        		canvas.drawOval(ellipse.getRectF(), rectPaint);
+        		//canvas.drawCircle((float) ellipse.getCX(), (float) ellipse.getCY(),
+        		//		(float) ellipse.getRadius(), rectPaint);
         	}
         }
     }
