@@ -9,12 +9,12 @@ import android.util.Log;
 public class ShapeRecognizer {
 	
 	private static final double LENGTH_TOLERANCE = 0.2;
-	private static final double DEG_TOLERANCE = 20;
+	private static final double DEG_TOLERANCE = 15;
 	private static final double RIGHT_ANGLE = 90;
 	private static final double TRIANGLE_SUM = 180;
 	private static final double TRI_TOLERANCE = 20;
-	private static final double ELLIPSE_TOLERANCE = 1.3;
-	private static final double ELLIPSE_LOWER_TOLERANCE = 0.7;
+	private static final double ELLIPSE_TOLERANCE = 0.5;
+	private static final double ELLIPSE_LOWER_TOLERANCE = 0.1;
 	private final static boolean DEBUG = false;
 	
 	public static Shape recognizeShape(Vector shape){
@@ -169,6 +169,7 @@ public class ShapeRecognizer {
 	private static boolean canBeSquished(ArrayList<Segment> segments, int size) {
 		boolean small_segment = false;
 		double longest_length = longest(segments);
+		Log.d("Shape", "segments size " + segments.size());
 		
 		for (int i = 0; i < segments.size(); i++) {
 			if (segments.get(i).getLength() < LENGTH_TOLERANCE * longest_length) { 
@@ -230,7 +231,7 @@ public class ShapeRecognizer {
 				}
 				
 				if (DEBUG) Log.d("Shape", before + " " + after);
-				if (DEBUG) Log.d("Shape", "size " + segments.size());
+				Log.d("Shape", "size " + segments.size());
 				
 				segments.get(before).end.x = midpoint.x;
 				segments.get(before).end.y = midpoint.y;
@@ -308,10 +309,9 @@ public class ShapeRecognizer {
 	
 	private static boolean isCircle(Vector shape){
 		if (DEBUG) Log.d("Shape", "Maybe it's a circle");
-		ArrayList<Segment> segments = shape.getSegments();
 		ArrayList<Point> points = shape.getPoints();
-		boolean isCircle = true;
-		double max_x = 0, max_y = 0, min_x = 0, min_y = 0;
+		double max_x = 0, max_y = 0, min_x = Double.MAX_VALUE, min_y = Double.MAX_VALUE;
+		int outside_points = 0;
 		
 		for (int i = 0; i < points.size(); i++) {
 			Point p = points.get(i);
@@ -334,16 +334,23 @@ public class ShapeRecognizer {
 		double radius_x = Math.abs(max_x - min_x);
 		double radius_y = Math.abs(max_y - min_y);
 		
+		Log.d("Shape", center_x + " " + center_y + " " + radius_x + " " + radius_y);
+		
 		for (int i = 0; i < points.size(); i++) {
 			Point p = points.get(i);
 			double lhs = Math.pow((p.x - center_x), 2) / Math.pow(radius_x, 2);
 			lhs += Math.pow((p.y - center_y), 2) / Math.pow(radius_y, 2);
+			Log.d("Shape", lhs + " " + p.x + " " + p.y);
 			if (lhs > ELLIPSE_TOLERANCE || lhs < ELLIPSE_LOWER_TOLERANCE) {
-				isCircle = false;
+				outside_points++;
 			}
 		}
 		
-		if (DEBUG) Log.d("Shape", "Maybe it's a circle end");
-		return isCircle;
+		Log.d("Shape", points.size() + " " + outside_points);
+		if (outside_points / points.size() > 0.2) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }

@@ -9,8 +9,8 @@ import android.util.Log;
 public class Vector {
 	
 	private static final String TAG = "VECTOR";
-	private static final double MIN_DISTANCE = 5.0; // TODO
-	private static final double SCALAR_TOLERANCE = 20.0; // TODO
+	private static final double MIN_DISTANCE = 10.0; // TODO
+	private static final double SCALAR_TOLERANCE = 15.0; // TODO
 	private static final double STRAIGHT_LINE = 180.0;
 	private static final double RIGHT_ANGLE = 90.0;
 	
@@ -91,6 +91,12 @@ public class Vector {
 			segments.add(new Segment(start_point, end_point));
 			start_point = null;
 			end_point = null;
+		}
+		
+		Log.d("Shape", "segments size" + segments.size());
+		
+		if (segments.size() == 0) {
+			segments.add(new Segment(new Point(), new Point()));
 		}
 		
 	}
