@@ -10,8 +10,6 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import edu.calpoly.shaperecognition.shaperecognition.Ellipse;
 import edu.calpoly.shaperecognition.shaperecognition.Rectangle;
@@ -20,7 +18,7 @@ import edu.calpoly.shaperecognition.shaperecognition.Shape;
 import edu.calpoly.shaperecognition.shaperecognition.Triangle;
 import edu.calpoly.shaperecognition.shaperecognition.Vector;
 
-public class DrawingPanel extends View //implements SurfaceHolder.Callback 
+public class DrawingPanel extends View
 {
     private ArrayList<Path> _graphics = new ArrayList<Path>();
     private ArrayList<Vector> _vectors = new ArrayList<Vector>();
@@ -28,15 +26,12 @@ public class DrawingPanel extends View //implements SurfaceHolder.Callback
     private Paint pointPaint;
     private Paint rectPaint;
 
-    //private DrawingThread _thread;
     private Path path;
     private Vector vector;
 
     public DrawingPanel(Context context) 
     {
         super(context);
-        //getHolder().addCallback(this);
-        //_thread = new DrawingThread(getHolder(), this);
         
         mPaint = new Paint();
         mPaint.setDither(true);
@@ -66,29 +61,27 @@ public class DrawingPanel extends View //implements SurfaceHolder.Callback
 
     public boolean onTouchEvent(MotionEvent event) 
     {
-        //synchronized (_thread.getSurfaceHolder()) {
-            if(event.getAction() == MotionEvent.ACTION_DOWN){
-                path = new Path();
-                vector = new Vector();
-                Log.d("Called", "Called!");
-                path.moveTo(event.getX(), event.getY());
-                path.lineTo(event.getX(), event.getY());
-                vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
-            }else if(event.getAction() == MotionEvent.ACTION_MOVE){
-                path.lineTo(event.getX(), event.getY());
-                vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
-            }else if(event.getAction() == MotionEvent.ACTION_UP){
-                path.lineTo(event.getX(), event.getY());
-                vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
-                _graphics.add(path);
-                _vectors.add(vector);
-                vector = null;
-                path = null;
-            }
-            invalidate();
-
-            return true;
-        //}
+	    if(event.getAction() == MotionEvent.ACTION_DOWN){
+	        path = new Path();
+	        vector = new Vector();
+	        Log.d("Called", "Called!");
+	        path.moveTo(event.getX(), event.getY());
+	        path.lineTo(event.getX(), event.getY());
+	        vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
+	    }else if(event.getAction() == MotionEvent.ACTION_MOVE){
+	        path.lineTo(event.getX(), event.getY());
+	        vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
+	    }else if(event.getAction() == MotionEvent.ACTION_UP){
+	        path.lineTo(event.getX(), event.getY());
+	        vector.addPoint(new Point((int)event.getX(), (int)event.getY()));
+	        _graphics.add(path);
+	        _vectors.add(vector);
+	        vector = null;
+	        path = null;
+	    }
+	    invalidate();
+	
+	    return true;
     }
 
     
@@ -128,32 +121,5 @@ public class DrawingPanel extends View //implements SurfaceHolder.Callback
         		canvas.drawOval(ellipse.getRectF(), rectPaint);
         	}
         }
-        Log.d("Shape", "Drawing");
     }
-
-    /*public void surfaceChanged(SurfaceHolder holder, int format, int width,
-                               int height) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void surfaceCreated(SurfaceHolder holder) {
-        // TODO Auto-generated method stub
-        _thread.setRunning(true);
-        _thread.start();
-    }
-
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        // TODO Auto-generated method stub
-        boolean retry = true;
-        _thread.setRunning(false);
-        while (retry) {
-            try {
-                _thread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-                // we will try it again and again...
-            }
-        }
-    }*/
 }
