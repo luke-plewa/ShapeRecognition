@@ -8,11 +8,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import edu.calpoly.shaperecognition.shaperecognition.Ellipse;
 import edu.calpoly.shaperecognition.shaperecognition.Rectangle;
 import edu.calpoly.shaperecognition.shaperecognition.Segment;
@@ -20,24 +20,23 @@ import edu.calpoly.shaperecognition.shaperecognition.Shape;
 import edu.calpoly.shaperecognition.shaperecognition.Triangle;
 import edu.calpoly.shaperecognition.shaperecognition.Vector;
 
-public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
+public class DrawingPanel extends View //implements SurfaceHolder.Callback 
 {
     private ArrayList<Path> _graphics = new ArrayList<Path>();
     private ArrayList<Vector> _vectors = new ArrayList<Vector>();
-    private Path curPath;
     private Paint mPaint;
     private Paint pointPaint;
     private Paint rectPaint;
 
-    private DrawingThread _thread;
+    //private DrawingThread _thread;
     private Path path;
     private Vector vector;
 
     public DrawingPanel(Context context) 
     {
         super(context);
-        getHolder().addCallback(this);
-        _thread = new DrawingThread(getHolder(), this);
+        //getHolder().addCallback(this);
+        //_thread = new DrawingThread(getHolder(), this);
         
         mPaint = new Paint();
         mPaint.setDither(true);
@@ -67,7 +66,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
 
     public boolean onTouchEvent(MotionEvent event) 
     {
-        synchronized (_thread.getSurfaceHolder()) {
+        //synchronized (_thread.getSurfaceHolder()) {
             if(event.getAction() == MotionEvent.ACTION_DOWN){
                 path = new Path();
                 vector = new Vector();
@@ -86,14 +85,18 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
                 vector = null;
                 path = null;
             }
+            invalidate();
 
             return true;
-        }
+        //}
     }
 
     
     @Override
     public void onDraw(Canvas canvas) {
+    	super.onDraw(canvas);
+    	
+    	canvas.drawColor(Color.BLACK);
     	
     	if (path != null) {
     		canvas.drawPath(path, mPaint);
@@ -102,8 +105,6 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
             //canvas.drawPoint(graphic.x, graphic.y, mPaint);
             canvas.drawPath(path, mPaint);
         }*/
-
-        //Log.d("Called", "Size: " + _vectors.size());
         
         //Delete after debugging
         for (Vector v : _vectors) {
@@ -125,13 +126,12 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
         	} else if (shape instanceof Ellipse) {
         		Ellipse ellipse = (Ellipse) shape;
         		canvas.drawOval(ellipse.getRectF(), rectPaint);
-        		//canvas.drawCircle((float) ellipse.getCX(), (float) ellipse.getCY(),
-        		//		(float) ellipse.getRadius(), rectPaint);
         	}
         }
+        Log.d("Shape", "Drawing");
     }
 
-    public void surfaceChanged(SurfaceHolder holder, int format, int width,
+    /*public void surfaceChanged(SurfaceHolder holder, int format, int width,
                                int height) {
         // TODO Auto-generated method stub
 
@@ -155,5 +155,5 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback
                 // we will try it again and again...
             }
         }
-    }
+    }*/
 }
