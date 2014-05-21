@@ -14,7 +14,6 @@ public class DrawActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(new DrawingPanel(this));
-		//test
 	}
 
 	@Override
