@@ -19,7 +19,10 @@ public class ShapeRecognizer {
 	
 	public static Shape recognizeShape(Vector shape){
 		
-		if(isSquare(shape)){
+		if (isLine(shape)) {
+			return makeLine(shape);
+		}
+		else if(isRectangle(shape)){
 			if (DEBUG) Log.d("Shape", "We have a square!");
 			return makeRectangle(shape);
 		}else if(isTriangle(shape)){
@@ -30,6 +33,16 @@ public class ShapeRecognizer {
 		}
 		
 		return null;
+	}
+	
+	public static Line makeLine(Vector shape) {
+		ArrayList<Segment> segments = shape.getSegments();
+		
+		while (canBeSquished(segments, 1)) {
+			segments = adjustSegments(segments);
+		}
+		
+		return new Line(segments);
 	}
 	
 	public static Ellipse makeEllipse(Vector shape) {
@@ -166,7 +179,7 @@ public class ShapeRecognizer {
 		return longest;
 	}
 	
-	private static boolean canBeSquished(ArrayList<Segment> segments, int size) {
+	private static boolean canBeSquished(ArrayList<Segment> segments, int desiredSize) {
 		boolean small_segment = false;
 		double longest_length = longest(segments);
 		Log.d("Shape", "segments size " + segments.size());
@@ -177,10 +190,10 @@ public class ShapeRecognizer {
 			}
 		}
 		
-		return segments.size() > size && small_segment;
+		return segments.size() > desiredSize && small_segment;
 	}
 
-	private static boolean isSquare(Vector shape){
+	private static boolean isRectangle(Vector shape){
 		if (DEBUG) Log.d("Shape", "Maybe it's a square");
 		ArrayList<Segment> segments = shape.getSegments();
 		double angle1 = 0, angle2 = 0, angle3 = 0, angle4 = 0;
@@ -196,10 +209,10 @@ public class ShapeRecognizer {
 			angle4 = segments.get(3).getAngle(segments.get(0));
 		}
 		
-		if((Math.abs(angle1 - RIGHT_ANGLE) < DEG_TOLERANCE)
-				&& (Math.abs(angle2 - RIGHT_ANGLE) < DEG_TOLERANCE) &&
-				(Math.abs(angle3 - RIGHT_ANGLE) < DEG_TOLERANCE)
-				&& (Math.abs(angle4 - RIGHT_ANGLE) < DEG_TOLERANCE)){
+		if((Math.abs(angle1 - RIGHT_ANGLE) < DEG_TOLERANCE + 10)
+				&& (Math.abs(angle2 - RIGHT_ANGLE) < DEG_TOLERANCE + 10) &&
+				(Math.abs(angle3 - RIGHT_ANGLE) < DEG_TOLERANCE + 10)
+				&& (Math.abs(angle4 - RIGHT_ANGLE) < DEG_TOLERANCE + 10)){
 			return true;
 		}
 		
@@ -278,6 +291,18 @@ public class ShapeRecognizer {
 		return false;
 	}
 	
+	private static boolean isLine(Vector shape){
+		if (DEBUG) Log.d("Shape", "Maybe it's a triangle");
+		ArrayList<Segment> segments = shape.getSegments();
+	
+		if (DEBUG) Log.d("Shape", "Start squishing " + segments.size());
+		while (canBeSquished(segments, 1)) {
+			segments = adjustSegments(segments);
+		}
+		if (DEBUG) Log.d("Shape", "End squishing");
+		
+		return segments.size() == 1;
+	}
 	
 	private static boolean isTriangle(Vector shape){
 		if (DEBUG) Log.d("Shape", "Maybe it's a triangle");
@@ -298,7 +323,7 @@ public class ShapeRecognizer {
 		
 		if (DEBUG) Log.d("Shape", "Tri: " + angle1 + " " + angle2 + " " + angle3);
 		
-		if(Math.abs(angle1 + angle2 + angle3 - TRIANGLE_SUM) < TRI_TOLERANCE){
+		if(Math.abs(angle1 + angle2 + angle3 - TRIANGLE_SUM) < TRI_TOLERANCE - 15){
 			if (DEBUG) Log.d("Shape", "It's a triangle");
 			return true;
 		}
